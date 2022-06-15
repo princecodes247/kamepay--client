@@ -2,13 +2,17 @@ import Head from "next/head";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { ethers } from "ethers";
+import QRCode from "react-qr-code";
 
 let provider;
 
 const TransactionBox = (props) => {
   return (
-    <div className="rounded white p-12">
+    <div className="rounded white p-12 flex flex-col gap-6 items-center ">
       {props.address}
+      <div className="p-8 bg-red-300">
+        <QRCode value={props.address} size={100} />
+      </div>
       <p>
         <strong>{props.amount}</strong>
       </p>
@@ -128,7 +132,7 @@ export default function Home() {
           <label htmlFor="amount">Amount</label>
           <input
             onChange={(e) => setAmount(e.target.value)}
-            type="number"
+            type="text"
             name="amount"
             id="amount"
           />
