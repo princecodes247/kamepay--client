@@ -8,10 +8,12 @@ let provider;
 
 const TransactionBox = (props) => {
   return (
-    <div className="rounded white p-12 flex flex-col gap-6 items-center ">
-      {props.address}
-      <div className="p-8 bg-red-300">
-        <QRCode value={props.address} size={100} />
+    <div className="rounded white flex flex-col gap-2 items-center ">
+      <p>{props.address}</p>
+      <div className="">
+        <div className="p-8 ">
+          <QRCode value={props.address} size={228} />
+        </div>
       </div>
       <p>
         <strong>{props.amount}</strong>
@@ -26,7 +28,7 @@ export default function Home() {
   const [account, setAccount] = useState("");
   useEffect(() => {
     async function load() {
-      provider = new ethers.providers.Web3Provider(window.ethereum);
+      provider = await new ethers.providers.Web3Provider(window.ethereum);
 
       // MetaMask requires requesting permission to connect users accounts
       let accounts = await provider.send("eth_requestAccounts", []);
@@ -78,7 +80,7 @@ export default function Home() {
   const [name, setName] = useState("");
   const handleSubmit = (e) => {
     e.preventDefault();
-    fetch("http://localhost:2020/api/transactions", {
+    fetch("https://kamepay.herokuapp.com/api/transactions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -109,7 +111,7 @@ export default function Home() {
           function () {
             alert("1 ether received!");
           },
-          10
+          20
         );
       })
       .catch((err) => {
@@ -125,7 +127,7 @@ export default function Home() {
   };
   return (
     <div>
-      <main className="h-screen flex items-center justify-center">
+      <main className="h-screen  items-center p-24 justify-center">
         <h1>Make Payment to @prince</h1>
         {account}
         <form onSubmit={handleSubmit} action="">
@@ -135,6 +137,7 @@ export default function Home() {
             type="text"
             name="amount"
             id="amount"
+            className="border border-gray-300 rounded p-2"
           />
           <label htmlFor="name">Name</label>
           <input
@@ -142,11 +145,12 @@ export default function Home() {
             type="text"
             name="name"
             id="name"
+            className="border border-gray-300 rounded p-2"
           />
-          <button>Submit</button>
+          <button className="p-2 bg-blue-400">Submit</button>
         </form>
 
-        <div className="transaction-box">
+        <div className="py-24">
           <TransactionBox {...transaction} />
         </div>
       </main>
