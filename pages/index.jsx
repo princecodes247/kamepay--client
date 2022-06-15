@@ -66,6 +66,8 @@ export default function Home() {
       return () => clearTimeout(timer);
     } else {
       console.log("Transaction failed");
+      setStatus("failed");
+      setIsTransactionOpen(false);
     }
   }
 
@@ -78,6 +80,7 @@ export default function Home() {
   };
   const [amount, setAmount] = useState("0");
   const [name, setName] = useState("");
+  const [status, setStatus] = useState("pending");
   const handleSubmit = (e) => {
     e.preventDefault();
     fetch("https://kamepay.herokuapp.com/api/transactions", {
@@ -105,13 +108,23 @@ export default function Home() {
         };
         setTransaction(newTransaction);
         setIsTransactionOpen(true);
+        setStatus("pending");
         waitForBalance(
           newTransaction.address,
           ethers.utils.parseEther(newTransaction.amount.toString()),
           function () {
-            alert("1 ether received!");
-          },
-          20
+            alert(newTransaction.amount + " ether received!");
+            setStatus("success");
+            setIsTransactionOpen(false);
+            fetch(
+              "https://kamepay.herokuapp.com/api/transactions/close/" + data._id
+            )
+              .then((res) => res.json())
+              .then((data) => data.data)
+              .then((data) => {
+                console.log(data);
+              });
+          }
         );
       })
       .catch((err) => {
@@ -149,9 +162,9 @@ export default function Home() {
           />
           <button className="p-2 bg-blue-400">Submit</button>
         </form>
-
+        <p>{status}</p>
         <div className="py-24">
-          <TransactionBox {...transaction} />
+          {isTransactionOpen ? <TransactionBox {...transaction} /> : ""}
         </div>
       </main>
     </div>
